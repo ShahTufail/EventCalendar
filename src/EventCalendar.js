@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import EventDialog from './EventDialog';
-import { subMonths, addMonths, format, startOfMonth, endOfMonth, isSameDay } from 'date-fns';
+import { subMonths, addMonths, format, startOfMonth, endOfMonth, isSameDay, addDays } from 'date-fns';
+import './EventCalendar.css';
 
 function EventCalendar() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -36,7 +37,9 @@ function EventCalendar() {
 
   const handleDeleteEvent = (event) => {
     setSelectedEvent(event);
+    
     setIsConfirmOpen(true);
+    setIsDialogOpen(false);
   };
 
   const handleCancelDelete = () => {
@@ -79,13 +82,16 @@ function EventCalendar() {
       const dayEvents = filteredEvents.filter((event) => isSameDay(new Date(event.date), currentDate));
 
       days.push(
-        <div key={currentDate} className="calendar-day" onClick={() => handleEditEvent(dayEvents[0])}>
-          <span className={isToday ? 'today' : ''}>{format(currentDate, 'd')}</span>
-          {dayEvents.map((event) => (
-            <div key={event.id} className="event">
-              {event.title}
-            </div>
-          ))}
+        <div key={currentDate} className={`calendar-day ${isToday ? 'today' : ''}`}>
+          <span className="day-number">{format(currentDate, 'd')}</span>
+          <div className="event-list">
+            {dayEvents.map((event) => (
+              <div key={event.id} className="event-card" onClick={() => handleEditEvent(event)}>
+                <div className="event-title">{event.title}</div>
+                <div className="event-date">{format(new Date(event.date), 'MMMM d, yyyy')}</div>
+              </div>
+            ))}
+          </div>
         </div>
       );
 
@@ -96,30 +102,34 @@ function EventCalendar() {
   };
 
   return (
-    <div>
-      <h1>Event Calendar</h1>
+    <div className="event-calendar">
       <div className="calendar-header">
-        <button onClick={handlePreviousMonth}>Previous Month</button>
-        <h2>{format(selectedDate, 'MMMM yyyy')}</h2>
-        <button onClick={handleNextMonth}>Next Month</button>
+        <button className="nav-button" onClick={handlePreviousMonth}>
+          &lt;
+        </button>
+        <h2 className="month-year">{format(selectedDate, 'MMMM yyyy')}</h2>
+        <button className="nav-button" onClick={handleNextMonth}>
+          &gt;
+        </button>
       </div>
       <div className="calendar-grid">{renderCalendarDays()}</div>
       <button className="add-event-button" onClick={handleAddEvent}>
         Add Event
       </button>
       {isDialogOpen && (
-        <EventDialog
-          isOpen={isDialogOpen}
-          onClose={handleCloseDialog}
-          onSave={handleSaveEvent}
-          event={selectedEvent}
-        />
+        <EventDialog isOpen={isDialogOpen} onClose={handleCloseDialog} onSave={handleSaveEvent} event={selectedEvent} onDelete={handleDeleteEvent}/>
       )}
       {isConfirmOpen && (
-        <div>
-          <p>Are you sure you want to delete this event?</p>
-          <button onClick={handleCancelDelete}>Cancel</button>
-          <button onClick={handleConfirmDelete}>Delete</button>
+        <div className="confirm-delete">
+          <p className="confirm-message">Are you sure you want to delete this event?</p>
+          <div className="confirm-buttons">
+            <button className="confirm-button" onClick={handleCancelDelete}>
+              Cancel
+            </button>
+            <button className="confirm-button" onClick={handleConfirmDelete}>
+              Delete
+            </button>
+          </div>
         </div>
       )}
     </div>

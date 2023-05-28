@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  background-color: #F2F6F8;
 }
 
 .App-logo {
@@ -27,6 +28,13 @@
 .App-link {
   color: #61dafb;
 }
+ 
+.calendar-title {
+  margin-left: 17rem;
+  text-align: left;
+  font-size: 24px;
+}
+
 
 @keyframes App-logo-spin {
   from {
